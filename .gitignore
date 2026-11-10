@@ -1,0 +1,25 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+node_modules/
+.next/
+artifacts/
+*.db
+.env.local
+.env.*.local
+*.tsbuildinfo
+
+.next-stage2/
+.local/
+
+# Private research, credentials, and generated data
+research-private/
+prompt_b2_o1.txt
+*.pem
+*.key
+*.p12
+*.pfx
+*.log
+*.sqlite*
+*.jsonl

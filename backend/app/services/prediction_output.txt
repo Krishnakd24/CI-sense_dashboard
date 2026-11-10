@@ -1,0 +1,19 @@
+OUTPUT REQUIREMENTS
+Return exactly one JSON object with these two fields:
+{"flaky_probability": <number between 0 and 1 inclusive>, "reasons": ["<reason>", "<reason>"]}
+
+The number represents the probability of flakiness, not the probability
+of failure on the next execution.
+
+Provide 2-4 short reasons explaining the estimated probability.
+Each reason must cite a specific observation from the supplied test code,
+failure reports, or project change description and briefly explain its relevance.
+Include evidence against flakiness or uncertainty when relevant; do not force
+a flaky interpretation when the evidence supports a low probability.
+Distinguish observed facts from possible explanations. A single failure
+does not prove flakiness. Do not invent behavior, historical outcomes,
+or a causal link between the project changes and the failure.
+Give concise evidence-based justifications, not step-by-step internal reasoning.
+Each reason must be one short sentence, at most 500 characters.
+Use a JSON string array for reasons; the dashboard will display it as bullet points.
+Do not include Markdown fences or additional fields.
