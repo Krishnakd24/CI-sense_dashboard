@@ -15,7 +15,14 @@ artifacts/
 
 # Private research, credentials, and generated data
 research-private/
-prompt_b2_o1.txt
+MODEL.md
+.env.*
+!.env.example
+.aws/
+.codex/
+.agents/
+credentials*
+secrets.*
 *.pem
 *.key
 *.p12

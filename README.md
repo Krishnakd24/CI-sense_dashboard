@@ -1,18 +1,51 @@
 # CI-Sense — Evidence and flakiness prediction
 
-See [prediction setup](docs/PREDICTION.md) for central-model testing and prediction, and [Stage 2 contracts](docs/STAGE_2.md) for migration 0002 and evidence JSON. The B2_o1 prompt contains private research examples and is deliberately excluded. Provide the original prompt privately through B2_O1_PROMPT_PATH; prediction will not run without it.
+See [prediction setup](docs/PREDICTION.md) for central-model testing and prediction, and [Stage 2 contracts](docs/STAGE_2.md) for migration 0002 and evidence JSON. The exact B2_o1 research prompt, including its two fixed examples, is bundled at `backend/app/services/prompt_b2_o1.txt`. No research checkout is required to run the app. An optional `B2_O1_PROMPT_PATH` overrides the bundled file. The app replaces the prompt's output requirements at runtime with `prediction_output.txt` to request a probability and concise reasons.
 
 Next.js / TypeScript frontend, FastAPI backend, PostgreSQL, SQLAlchemy and Alembic. GitHub-only authentication uses the GitHub App's OAuth web flow; the same app's user access token limits repository access to the intersection of the user's permissions and the app installation's selected repositories.
 
 **Implementation status:** source is implemented; runtime verification is outstanding in the authoring session. Python is installed on the user's machine but inaccessible to the execution sandbox. npm registry access was denied with EACCES. No live OAuth, database, S3, LLM, browser, or production deployment has been verified. Do not treat this as a production-validated release. Run the checks below locally before deployment.
+
+## Directory structure
+
+```text
+ci-sense/
+|-- backend/
+|   |-- app/                       # FastAPI routes, persistence, and pipeline
+|   |   `-- services/              # XML, Java source, GitHub, and model services
+|   |       |-- prompt_b2_o1.txt   # Exact research prompt with fixed examples
+|   |       `-- prediction_output.txt # App output contract: probability + reasons
+|   |-- migrations/                # Alembic database migrations
+|   |-- tests/                     # Backend tests
+|   |-- alembic.ini
+|   `-- requirements.txt
+|-- frontend/
+|   |-- app/                       # Next.js routes, layout, and styles
+|   |-- components/                # Dashboard, evidence review, and prediction UI
+|   |-- .env.example               # Frontend configuration template
+|   |-- package.json
+|   |-- package-lock.json
+|   `-- ...                        # Next.js, TypeScript, and CSS configuration
+|-- docs/
+|   |-- PREDICTION.md              # Prediction setup and prompt behavior
+|   `-- STAGE_2.md                 # Evidence contracts and migration guidance
+|-- scripts/                       # Local start/stop and verification helpers
+|-- .env.example                   # Backend configuration template
+|-- .gitignore
+|-- compose.yaml                   # Local PostgreSQL service
+|-- IMPLEMENTATION_STATUS.md       # Implemented features and verification limits
+`-- README.md
+```
+
+Local `.env` files, `.venv/`, `frontend/node_modules/`, build output, and `backend/artifacts/` are excluded from Git. The application includes its prompt and runs independently of the research repository.
 
 ## Scope and reuse
 
 - Manual JUnit upload → failure selection → Extract Evidence → persisted Evidence Review.
 - Admin public-repository testing shares the exact same pipeline; its records are separated from personal project history.
 - Continue to Prediction opens the selected test’s prediction controls. Prediction uses saved B2_o1 evidence and the original research prompt. Probabilities are real provider outputs between 0 and 1; failures have no fabricated result. GitHub Actions integration is not implemented.
-- The original research files are unchanged. `app/services/xml_parser.py` adapts the extraction rules in `../failing_logs_XMLS/extract_test_failure_details.ps1` from a CSV-oriented PowerShell batch job into a safe upload parser. It preserves separate testcase entries, failure/error messages, original problem attributes/text, stack traces, expected/actual values and testcase output. DTDs and entities are rejected.
-- `java_methods.py` reuses the comment/string-aware method extraction from `../failing_logs_XMLS/extract_test_code.py`. The current source resolver supports the Java JUnit research corpus. Unmatched, inherited or overloaded methods are marked missing/ambiguous, with a full source file when available. Other languages are not silently guessed.
+- The original research files are unchanged. `app/services/xml_parser.py` adapts the extraction rules from the research repository's `data_preparation/extract_test_failure_details.ps1` into a safe upload parser. It preserves separate testcase entries, failure/error messages, original problem attributes/text, stack traces, expected/actual values and testcase output. DTDs and entities are rejected. The research scripts are provenance references, not runtime dependencies.
+- `java_methods.py` reuses the comment/string-aware method extraction from the research repository's `data_preparation/extract_test_code.py`. The current source resolver supports the Java JUnit research corpus. Unmatched, inherited or overloaded methods are marked missing/ambiguous, with a full source file when available. Other languages are not silently guessed.
 - XML evidence is inspected manually; no XML LLM is configured or invoked.
 
 ## Local setup (PowerShell)

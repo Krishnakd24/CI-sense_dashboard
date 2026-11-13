@@ -7,7 +7,7 @@ import math
 import os
 from pathlib import Path
 
-DEFAULT_PROMPT = Path(__file__).resolve().parents[4] / "Final_data" / "prompt_b2_o1.txt"
+DEFAULT_PROMPT = Path(__file__).with_name("prompt_b2_o1.txt")
 
 def prompt_reference():
     path = Path(os.getenv("B2_O1_PROMPT_PATH") or str(DEFAULT_PROMPT))
